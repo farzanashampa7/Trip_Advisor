@@ -12,6 +12,7 @@ const Map = ({
   coordinates,
   places,
   setChildClicked,
+  weatherData,
 }) => {
   const classes = useStyles();
   const isDesktop = useMediaQuery("(min-width: 600px)");
@@ -19,12 +20,12 @@ const Map = ({
   return (
     <div className={classes.mapContainer}>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyCWTSuZz-Wt_7x7fvrDMYJKbc0tg-b95bo" }}
+        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
         defaultCenter={coordinates}
         center={coordinates}
         defaultZoom={14}
         margin={[50, 50, 50, 50]}
-        options={""}
+        options={{ disableDefaultUI: true, zoomControl: true }}
         onChange={(e) => {
           console.log(e);
           setCoordinates({ lat: e.center.lat, lng: e.center.lng });
@@ -42,7 +43,11 @@ const Map = ({
             {!isDesktop ? (
               <LocationOn color="primary" fontSize="large" />
             ) : (
-              <Paper elevation={3} className={classes.paper}>
+              <Paper
+                elevation={3}
+                className={classes.paper}
+                // className={classes.pointer}
+              >
                 <Typography
                   className={classes.typography}
                   variant="subtitle2"
@@ -58,6 +63,7 @@ const Map = ({
                       ? place.photo.images.large.url
                       : "https://www.foodserviceandhospitality.com/wp-content/uploads/2016/09/Restaurant-Placeholder-001.jpg"
                   }
+                  alt={place.name}
                 />
                 <Rating
                   name="read-only"
@@ -69,6 +75,16 @@ const Map = ({
             )}
           </div>
         ))}
+
+        {weatherData?.list?.length &&
+          weatherData.list.map((data, i) => (
+            <div key={i} lat={data.coord.lat} lng={data.coord.lon}>
+              <img
+                src={`https://openweathermap.org/img/w/${data.weather[0].icon}.png`}
+                height="70px"
+              />
+            </div>
+          ))}
       </GoogleMapReact>
     </div>
   );

@@ -3,11 +3,11 @@ import { CssBaseline, Grid } from "@material-ui/core";
 import Header from "./components/Header/Header";
 import List from "./components/List/List";
 import Map from "./components/Map/Map";
-import { getPlacesData } from "./api/tripAdvisorAPI";
-// import PlaceDetails from "./components/PlaceDetails/PlaceDetails";
+import { getPlacesData, getWeatherData } from "./api/tripAdvisorAPI";
 
 const App = () => {
   const [places, setPlaces] = useState([]);
+  const [weatherData, setWeatherData] = useState([]);
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [coordinates, setCoordinates] = useState({});
   const [bounds, setBounds] = useState({});
@@ -32,6 +32,11 @@ const App = () => {
   useEffect(() => {
     if (bounds.ne && bounds.sw) {
       setIsLoading(true);
+
+      getWeatherData(coordinates.lat, coordinates.lng).then((data) => {
+        setWeatherData(data);
+        console.log({ data });
+      });
 
       getPlacesData(type, bounds.ne, bounds.sw).then((data) => {
         // console.log(data);
@@ -69,6 +74,7 @@ const App = () => {
             coordinates={coordinates}
             places={filteredPlaces.length ? filteredPlaces : places}
             setChildClicked={setChildClicked}
+            weatherData={weatherData}
           />
         </Grid>
       </Grid>
